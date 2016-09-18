@@ -15,6 +15,7 @@ interface Contract {
         fun onMurmursChanged(all: List<Murmur>, playing: List<Murmur>)
         fun onSongChanged(song: SongS.Song)
         fun onTimeChanged(timedText: String)
+        fun onBeatSpeedChanged(speed: Float)
 
         fun showToast(msg: String)
     }

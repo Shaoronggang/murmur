@@ -75,7 +75,7 @@ class MainFragment : BaseFragment(), Contract.View, View.OnTouchListener {
             val shader = resources.openRawResource(R.raw.shader).reader().readText()
             renderer = ShaderRenderer(activity, shader).apply {
                 setBackColor(ContextCompat.getColor(ctx, R.color.color_primary_dark))
-                setSpeed(0.6f)
+//                setSpeed(0.6f)
 
                 surfaceView.setRenderer(this)
             }
@@ -196,11 +196,15 @@ class MainFragment : BaseFragment(), Contract.View, View.OnTouchListener {
             }
         }
 
-        renderer.setSpeed(1.0f)
+//        renderer.setSpeed(1.0f)
     }
 
     override fun onTimeChanged(timedText: String) {
         timeTextView.text = timedText
+    }
+
+    override fun onBeatSpeedChanged(speed: Float) {
+        renderer.setSpeed(speed)
     }
 
     fun switchPalette(bitmap: Bitmap) {

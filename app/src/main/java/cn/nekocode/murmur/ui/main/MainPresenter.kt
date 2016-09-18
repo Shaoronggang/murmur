@@ -30,7 +30,7 @@ class MainPresenter() : BasePresenter(), Contract.Presenter {
     val murmurs = ArrayList<Murmur>()
     val playingMurmurs = ArrayList<Murmur>()
     var playingSong: SongS.Song? = null
-    var timingTextTask: TimingTextTask? = null
+    var timingTask: TimingTask? = null
 
     override fun onAttach(activity: Activity?) {
         super.onAttach(activity)
@@ -74,7 +74,7 @@ class MainPresenter() : BasePresenter(), Contract.Presenter {
         }
 
         // 异步获取歌曲剩余时间
-        timingTextTask = TimingTextTask(view).apply { execute() }
+        timingTask = TimingTask(view).apply { execute() }
     }
 
     override fun onVewCreated(savedInstanceState: Bundle?) {
@@ -106,7 +106,7 @@ class MainPresenter() : BasePresenter(), Contract.Presenter {
 
     override fun onDestroyView() {
         // 终止获取歌曲剩余时间的任务
-        timingTextTask?.cancel(true)
+        timingTask?.cancel(true)
         super.onDestroyView()
     }
 

@@ -3,8 +3,8 @@ package cn.nekocode.murmur.service
 import android.app.Service
 import android.content.Intent
 import android.media.MediaPlayer
+import android.media.audiofx.Visualizer
 import android.os.Binder
-import android.os.IBinder
 import cn.nekocode.kotgo.component.rx.RxBus
 import cn.nekocode.murmur.data.DO.douban.SongS
 import cn.nekocode.murmur.data.DO.Murmur
@@ -20,14 +20,16 @@ class MusicService: Service() {
     inner class MusicServiceBinder: Binder() {
         val service = this@MusicService
     }
-    override fun onBind(intent: Intent?): IBinder {
-        return MusicServiceBinder()
-    }
+    override fun onBind(intent: Intent?) = MusicServiceBinder()
 
+    class SongPlayer(var song: SongS.Song?, var player: MediaPlayer)
     private val songPlayer = SongPlayer(null, MediaPlayer())
     private val murmurPlayers = hashMapOf<Murmur, MediaPlayer>()
     private var stopSong = false
     private var stopMurmurs = false
+    var fftAverage: Float = 0.6f
+    var fft: ByteArray? = null
+    var oldVisualizer: Visualizer? = null
 
     fun playSong(song: SongS.Song) {
         stopSong = false
@@ -44,9 +46,32 @@ class MusicService: Service() {
                 if(!stopSong) {
                     it.start()
                     RxBus.send("Prepared")
+
+                    fftAverage = 0.6f
+                    oldVisualizer?.release()
+                    // 捕获音频信息
+                    oldVisualizer = Visualizer(player.audioSessionId).apply {
+                        captureSize = Visualizer.getCaptureSizeRange()[1]
+
+                        setDataCaptureListener(object: Visualizer.OnDataCaptureListener {
+                            override fun onFftDataCapture(visualizer: Visualizer,
+                                                          fft: ByteArray, samplingRate: Int) {
+                                // TODO
+                                this@MusicService.fft = fft
+
+                            }
+
+                            override fun onWaveFormDataCapture(visualizer: Visualizer,
+                                                               waveform: ByteArray, samplingRate: Int) {
+                            }
+                        }, Visualizer.getMaxCaptureRate() / 2, false, true)
+
+                        enabled = true
+                    }
                 }
             }
 
+            // 音乐播放完后
             player.setOnCompletionListener {
                 RxBus.send("Finished")
             }
@@ -129,6 +154,4 @@ class MusicService: Service() {
         }
         murmurPlayers.clear()
     }
-
-    data class SongPlayer(var song: SongS.Song?, var player: MediaPlayer)
 }
