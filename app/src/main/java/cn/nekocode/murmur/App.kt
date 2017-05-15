@@ -44,7 +44,7 @@ class App : Application() {
         instance = this
 
         LeakCanary.install(this)
-        DataLayer.hook(this)
+        DataLayer.init(this)
         bindService()
 
         CalligraphyConfig.initDefault(

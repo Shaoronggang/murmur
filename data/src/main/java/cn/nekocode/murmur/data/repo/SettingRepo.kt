@@ -1,6 +1,6 @@
 package cn.nekocode.murmur.data.repo
 
-import com.orhanobut.hawk.Hawk
+import cn.nekocode.murmur.data.util.CacheUtil
 
 /**
  * @author nekocode (nekocode.cn@gmail.com)
@@ -8,11 +8,11 @@ import com.orhanobut.hawk.Hawk
 object SettingRepo {
 
     fun loadSelectedMurmursIDs(): List<String>? {
-        return Hawk.get("selectedMurmursIDs")
+        return CacheUtil.read<List<String>>("selectedMurmursIDs")
     }
 
     fun saveSelectedMurmursIDs(murmursIDs: List<String>?) {
-        Hawk.put("selectedMurmursIDs", murmursIDs)
+        CacheUtil.write("selectedMurmursIDs", murmursIDs)
     }
 
 }

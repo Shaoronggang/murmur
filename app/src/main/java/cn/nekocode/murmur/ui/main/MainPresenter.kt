@@ -3,15 +3,13 @@ package cn.nekocode.murmur.ui.main
 import android.os.Bundle
 import android.os.Parcelable
 import cn.nekocode.kotgo.component.rx.RxBus
-import cn.nekocode.kotgo.component.rx.bindLifecycle
-import cn.nekocode.kotgo.component.rx.onUI
-import cn.nekocode.kotgo.component.ui.BasePresenter
+import cn.nekocode.kotgo.component.ui.KtPresenter
 import cn.nekocode.murmur.data.DO.Murmur
 import cn.nekocode.murmur.data.DO.MurmurParcel
+import cn.nekocode.murmur.data.DO.douban.DoubanSong
 import cn.nekocode.murmur.data.DO.douban.Session
 import cn.nekocode.murmur.data.DO.douban.SessionParcel
 import cn.nekocode.murmur.data.DO.douban.SongParcel
-import cn.nekocode.murmur.data.DO.douban.SongS
 import cn.nekocode.murmur.data.exception.DoubanException
 import cn.nekocode.murmur.data.repo.DoubanRepo
 import cn.nekocode.murmur.data.repo.MurmurRepo
@@ -24,31 +22,31 @@ import java.util.*
 /**
  * @author nekocode (nekocode.cn@gmail.com)
  */
-class MainPresenter() : BasePresenter<Contract.View>(), Contract.Presenter {
+class MainPresenter() : KtPresenter<Contract.View>(), Contract.Presenter {
+    companion object {
+        private const val KEY_SAVED_SESSION = "session"
+        private const val KEY_SAVED_MURMURS = "murmurs"
+        private const val KEY_SAVED_MURMURS_PLAYING = "murmurs_playing"
+        private const val KEY_SAVED_SONG_PLAYING = "song_playing"
+    }
+
     var view: Contract.View? = null
 
     var session: Session? = null
     val murmurs = ArrayList<Murmur>()
     val playingMurmurs = ArrayList<Murmur>()
-    var playingSong: SongS.Song? = null
+    var playingSong: DoubanSong.Song? = null
     var timingTextTask: TimingTextTask? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (savedInstanceState != null) {
-            // 恢复现场
-            session = savedInstanceState.getParcelable<SessionParcel>("session").data
-            murmurs.addAll(
-                    savedInstanceState.getParcelableArrayList<MurmurParcel>("murmurs")
-                            .map { it.data }
-            )
-            playingMurmurs.addAll(
-                    savedInstanceState.getParcelableArrayList<MurmurParcel>("playingMurmurs")
-                            .map { it.data }
-            )
-            playingSong = savedInstanceState.getParcelable<SongParcel>("playingSong").data
-
+        // 恢复现场
+        savedInstanceState?.let {
+            session = it.getParcelable<SessionParcel>(KEY_SAVED_SESSION).data
+            murmurs.addAll(it.getParcelableArrayList<MurmurParcel>(KEY_SAVED_MURMURS).map { it.data })
+            playingMurmurs.addAll(it.getParcelableArrayList<MurmurParcel>(KEY_SAVED_MURMURS_PLAYING).map { it.data })
+            playingSong = it.getParcelable<SongParcel>(KEY_SAVED_SONG_PLAYING).data
         }
 
         // 订阅播放结束事件

@@ -3,13 +3,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion(COMPILE_SDK_VERSION.toInteger())
+    buildToolsVersion(BUILD_TOOLS_VERSION)
 
     defaultConfig {
         applicationId "cn.nekocode.murmur"
         minSdkVersion 17
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode PROJECT_VERSION_CODE.toInteger()
         versionName PROJECT_VERSION_NAME
     }
@@ -21,10 +21,15 @@ android {
     }
 }
 
+def ankoVersion = "0.9"
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(":data")
-    compile "com.github.nekocode:kotgo:1.4"
+    compile "com.github.nekocode:kotgo:2.0"
+
+    // Data Layer
+    debugCompile project(path: ':data', configuration: "debug")
+    releaseCompile project(path: ':data', configuration: "release")
 
     // Android support libraries
     compile "com.android.support:appcompat-v7:$SUPPORT_LIBS_VERSION"
@@ -37,9 +42,9 @@ dependencies {
     compile "io.reactivex:rxandroid:1.2.1"
 
     // DSL
-    compile 'org.jetbrains.anko:anko-sdk15:0.9' // sdk19, sdk21, sdk23 are also available
-    compile 'org.jetbrains.anko:anko-support-v4:0.9' // In case you need support-v4 bindings
-    compile 'org.jetbrains.anko:anko-appcompat-v7:0.9' // For appcompat-v7 bindings
+    compile "org.jetbrains.anko:anko-sdk15:$ankoVersion" // sdk19, sdk21, sdk23 are also available
+    compile "org.jetbrains.anko:anko-support-v4:$ankoVersion" // In case you need support-v4 bindings
+    compile "org.jetbrains.anko:anko-appcompat-v7:$ankoVersion" // For appcompat-v7 bindings
 
     // Debug
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1' // or 1.4-beta1

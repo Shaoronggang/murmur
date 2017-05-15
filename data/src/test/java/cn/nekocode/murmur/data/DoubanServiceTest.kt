@@ -1,7 +1,7 @@
 package cn.nekocode.murmur.data
 
 import cn.nekocode.murmur.data.DO.douban.Session
-import cn.nekocode.murmur.data.DO.douban.SongS
+import cn.nekocode.murmur.data.DO.douban.DoubanSong
 import cn.nekocode.murmur.data.service.Api.DoubanFM
 import cn.nekocode.murmur.data.service.Api.DoubanToken
 import org.junit.Assert
@@ -23,7 +23,7 @@ class DoubanServiceTest {
 
     @Before
     fun setUp() {
-        DataLayer.hook(RuntimeEnvironment.application)
+        DataLayer.init(RuntimeEnvironment.application)
     }
 
     @Test
@@ -31,8 +31,7 @@ class DoubanServiceTest {
         // Test login()
         val session = TestSubscriber<Session>().apply {
 
-//            DoubanToken.API.login("", "")  // TODO Replace your username and password
-            DoubanToken.API.login("syfyw@qq.com", "110110zxc")  // TODO Replace your username and password
+            DoubanToken.API.login("", "")  // TODO Replace your username and password
                     .toBlocking().subscribe(this)
 
         }.checkErr().onNextEvents[0]
@@ -42,7 +41,7 @@ class DoubanServiceTest {
 
 
         // Test getRedHeartSongIds()
-        val songIds = TestSubscriber<SongS.Ids>().apply {
+        val songIds = TestSubscriber<DoubanSong.Ids>().apply {
 
             DoubanFM.API.getRedHeartSongIds(auth)
                     .toBlocking().subscribe(this)
@@ -56,7 +55,7 @@ class DoubanServiceTest {
 
 
         // Test getSongs()
-        val songs = TestSubscriber<ArrayList<SongS.Song>>().apply {
+        val songs = TestSubscriber<ArrayList<DoubanSong.Song>>().apply {
 
             DoubanFM.API.getSongs(auth, idListStr)
                     .toBlocking().subscribe(this)

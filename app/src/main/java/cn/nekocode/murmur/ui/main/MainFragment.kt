@@ -19,10 +19,10 @@ import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
 import android.widget.*
 import cn.nekocode.kotgo.component.rx.RxBus
-import cn.nekocode.kotgo.component.ui.BaseFragment
-import cn.nekocode.kotgo.component.ui.FragmentActivity
+import cn.nekocode.kotgo.component.ui.KtFragment
+import cn.nekocode.kotgo.component.ui.KtFragmentActivity
 import cn.nekocode.murmur.R
-import cn.nekocode.murmur.data.DO.douban.SongS
+import cn.nekocode.murmur.data.DO.douban.DoubanSong
 import cn.nekocode.murmur.data.DO.Murmur
 import cn.nekocode.murmur.util.CircleTransform
 import cn.nekocode.murmur.util.ImageUtil
@@ -37,11 +37,11 @@ import kotlin.properties.Delegates
 /**
  * @author nekocode (nekocode.cn@gmail.com)
  */
-class MainFragment : BaseFragment(), Contract.View, View.OnTouchListener {
+class MainFragment : KtFragment(), Contract.View, View.OnTouchListener {
     companion object {
         const val TAG = "MainFragment"
 
-        fun push(fragmentActivity: FragmentActivity) {
+        fun push(fragmentActivity: KtFragmentActivity) {
             fragmentActivity.push(TAG, MainFragment::class.java)
         }
     }
@@ -64,6 +64,7 @@ class MainFragment : BaseFragment(), Contract.View, View.OnTouchListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
         return inflater?.inflate(R.layout.fragment_main, container, false)
     }
 
@@ -112,12 +113,12 @@ class MainFragment : BaseFragment(), Contract.View, View.OnTouchListener {
         oldTextColor = Color.WHITE
 
         // 订阅事件总线
-        RxBus.subscribe(String::class.java) {
-            if (it.equals("Prepared")) {
+        RxBus.safetySubscribe(String::class.java, { event ->
+            if (event == "Prepared") {
                 isPaletteChanging = false
                 progressWheel.visibility = View.INVISIBLE
             }
-        }
+        }, {})
     }
 
     override fun onBackPressed(): Boolean {
@@ -190,7 +191,7 @@ class MainFragment : BaseFragment(), Contract.View, View.OnTouchListener {
         }
     }
 
-    override fun onSongChanged(song: SongS.Song) {
+    override fun onSongChanged(song: DoubanSong.Song) {
         isPaletteChanging = true
 
         song.apply {

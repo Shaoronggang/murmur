@@ -6,7 +6,7 @@ import nz.bradcampbell.paperparcel.PaperParcel
 /**
  * @author nekocode (nekocode.cn@gmail.com)
  */
-object SongS {
+object DoubanSong {
     internal class Ids(
             @SerializedName("songs") val songs: List<Id>
     )
